@@ -1,0 +1,29 @@
+.file-uploader-container {
+    margin-top: 20px;
+  }
+  
+  .file-uploader-label {
+    margin-right: 10px;
+  }
+  
+  .file-uploader-input {
+    display: inline-block;
+    width: auto;
+  }
+  
+  .file-preview {
+    margin-left: 10px;
+  }
+  
+  .file-uploader-button {
+    margin-top: 20px;
+  }
+  
+  .columns-list {
+    margin-top: 20px;
+  }
+  
+  .columns-list h5 {
+    margin-bottom: 10px;
+  }
+  
