@@ -86,12 +86,12 @@ def select_column():
     return jsonify({'message': 'Column selected successfully'}), 200
 
 def train_model_with_algorithm(data, df, algorithm, column):
-    # data['age'] = data['age'].astype('float64')
+    data['age'] = data['age'].astype('float64')
     df = remove_null_values(df)
     data = handle_null_values(data, df)
     data = handle_outliers(data)
-    # data['income'] = data['income'].str.strip()
-    # data['income'] = data['income'].replace({'<=50K.': '<=50K', '>50K.': '>50K'})
+    data['income'] = data['income'].str.strip()
+    data['income'] = data['income'].replace({'<=50K.': '<=50K', '>50K.': '>50K'})
     data = label_encoding(data)
     X, Y = split_x_y(data, column)
     X_train, X_test, y_train, y_test = split_data(X, Y)

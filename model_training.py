@@ -79,7 +79,7 @@ def train_logistic_regression(x_train,y_train):
         'l1_ratio': uniform(loc=0, scale=1) 
     }
     
-    random_search = RandomizedSearchCV(log_reg, param_distributions=param_dist, n_iter=100, cv=5, scoring='accuracy', random_state=42, n_jobs=-1)
+    random_search = RandomizedSearchCV(log_reg, param_distributions=param_dist, n_iter=1000, cv=5, scoring='accuracy', random_state=42, n_jobs=-1)
 
     random_search.fit(x_train, y_train)
     best_log_reg = random_search.best_estimator_

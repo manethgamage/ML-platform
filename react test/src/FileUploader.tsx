@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Button, Form, Table } from 'react-bootstrap';
 import './FileUploader.css';
 
@@ -17,6 +17,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [showRemoveColumns, setShowRemoveColumns] = useState<boolean>(false);
   const [showSelectTargetColumn, setShowSelectTargetColumn] = useState<boolean>(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
@@ -47,9 +49,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
 
       if (response.ok) {
         const result = await response.json();
-        alert('File uploaded successfully!');
         setColumns(result.columns); // Set the received column names
-        setTableData(prevData => [...prevData, { fileName: selectedFileName, status: 'Uploaded', testAccuracy: '', precision: '', recall: '' }]);
+        setTableData(prevData => [...prevData, { fileName: selectedFileName, status: 'Uploaded', testAccuracy: '', trainingAccuracy: '', precision: '', recall: '', model: '' }]);
         setShowRemoveColumns(true); // Show the "Remove Columns" section
       } else {
         const errorResult = await response.json();
@@ -84,7 +85,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
 
       if (response.ok) {
         const result = await response.json();
-        alert('Columns removed successfully!');
         setColumns(result.columns); // Update the columns after removal
         setSelectedColumnsToRemove([]); // Clear the selected columns to remove
         setShowRemoveColumns(false); // Hide the "Remove Columns" section
@@ -119,10 +119,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
       });
 
       if (response.ok) {
-        alert('Column selected successfully!');
         setShowAlgorithmSelection(true);
         setSelectedColumn(null); // Clear selected column
         setColumns([]); // Clear columns list (if needed)
+        setShowSelectTargetColumn(false); // Hide the "Select Target Column" section
       } else {
         const errorResult = await response.json();
         alert(`Failed to select column. Error: ${errorResult.error}`);
@@ -156,15 +156,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
 
       if (response.ok) {
         const result = await response.json();
-        alert('Algorithm selected and model trained successfully!');
         const downloadUrl = `http://localhost:5000/download-model?model_filename=${result.model_filename}`;
-        window.location.href = downloadUrl;
 
         setTableData(prevData => prevData.map(row =>
           row.fileName === selectedFileName
-            ? { ...row, status: 'Completed', testAccuracy: result.testAccuracy, trainingAccuracy: result.trainingAccuracy, precision: result.precision, recall: result.recall }
+            ? { ...row, status: 'Completed', testAccuracy: result.testAccuracy, trainingAccuracy: result.trainingAccuracy, precision: result.precision, recall: result.recall, model: downloadUrl }
             : row
         ));
+        resetForm(); // Reset the form after training and model download
       } else {
         const errorResult = await response.json();
         alert(`Failed to train model. Error: ${errorResult.error}`);
@@ -172,6 +171,21 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
     } catch (error) {
       console.error('Error training model:', error);
       alert('An error occurred while training the model.');
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedFile(null);
+    setSelectedFileName(null);
+    setColumns([]);
+    setSelectedColumnsToRemove([]);
+    setSelectedColumn(null);
+    setAlgorithm(null);
+    setShowAlgorithmSelection(false);
+    setShowRemoveColumns(false);
+    setShowSelectTargetColumn(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Clear file input
     }
   };
 
@@ -183,7 +197,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
             <div className="d-flex align-items-center justify-content-between">
               <div className="file-chooser">
                 <Form.Label htmlFor="fileUpload" className="file-uploader-label">Choose File:</Form.Label>
-                <Form.Control id="fileUpload" type="file" onChange={handleFileChange} className="file-uploader-input" />
+                <Form.Control 
+                  id="fileUpload" 
+                  type="file" 
+                  onChange={handleFileChange} 
+                  className="file-uploader-input" 
+                  ref={fileInputRef}
+                />
               </div>
               {selectedFileName && (
                 <div className="file-preview">
@@ -282,9 +302,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
           )}
         </Col>
       </Row>
-      <Row className="justify-content-center mt-3">
+      <Row className="justify-content-center">
         <Col>
-          <Table striped bordered hover>
+          <Table striped bordered hover className="mt-3">
             <thead>
               <tr>
                 <th>File Name</th>
@@ -293,27 +313,27 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
                 <th>Training Accuracy</th>
                 <th>Precision</th>
                 <th>Recall</th>
+                <th>Model</th>
               </tr>
             </thead>
             <tbody>
-              {tableData.length > 0 ? (
-                tableData.map((data, index) => (
-                  <tr key={index}>
-                    <td>{data.fileName}</td>
-                    <td>{data.status}</td>
-                    <td>{data.testAccuracy}</td>
-                    <td>{data.trainingAccuracy}</td>
-                    <td>{data.precision}</td>
-                    <td>{data.recall}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="text-center">
-                    No data available
+              {tableData.map((data, index) => (
+                <tr key={index}>
+                  <td>{data.fileName}</td>
+                  <td>{data.status}</td>
+                  <td>{data.testAccuracy}</td>
+                  <td>{data.trainingAccuracy}</td>
+                  <td>{data.precision}</td>
+                  <td>{data.recall}</td>
+                  <td>
+                    {data.model ? (
+                      <a href={data.model} download>Download</a>
+                    ) : (
+                      'N/A'
+                    )}
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </Table>
         </Col>
