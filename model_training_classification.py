@@ -21,15 +21,26 @@ from scipy.stats import randint as sp_randInt
 from sklearn.metrics import precision_score, recall_score
 from handle_class_imbalaced import *
 
-def label_encoding(df,tar_column):
+def label_encoding(df, tar_column):
+    # Initialize the dictionary to store the mappings
+    class_mappings = {}
+    
+    # Initialize the encoder
     encoder = LabelEncoder()
+    
+    # Encode the target column if it's not already numeric
     if df[tar_column].dtype != 'object':
         df[tar_column] = encoder.fit_transform(df[tar_column])
-        
+        class_mappings[tar_column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
+    
+    # Encode other columns
     for column in df.columns:
-        if df[column].dtype == 'object':
+        if df[column].dtype == 'object' :
+            encoder = LabelEncoder()  # Initialize a new encoder for each column
             df[column] = encoder.fit_transform(df[column])
-    return df
+            class_mappings[column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
+    
+    return df, class_mappings
 
 def split_x_y(data,target_column_name):
     X = data.drop(target_column_name,axis=1)
@@ -275,7 +286,7 @@ def train_svc(x_train,y_train):
     return model
 
 def train_model(name,x,y,x_train,y_train,x_test,y_test):
-    ratio = check_imbalance(y)
+    ratio,imb = check_imbalance(y)
     print(ratio)
     if len(y.unique()) == 2:
         if name == 'Logistic Regression':

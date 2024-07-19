@@ -15,7 +15,7 @@ gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 genai.configure(api_key=gemini_api_key)
 
-LLM = genai.GenerativeModel('models/gemini-pro-vision')
+LLM = genai.GenerativeModel('models/gemini-1.5-flash')
 
 def return_llm_response(img):
     response = LLM.generate_content(

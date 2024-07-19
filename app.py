@@ -5,17 +5,25 @@ import os
 from handle_null_values import *
 from handle_class_imbalaced import *
 from handle_outliers import *
-from model_training import *
+from model_training_classification import *
 import joblib
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import yagmail
 
 app = Flask(__name__)
 CORS(app)
 
+
+
 # Global variables
 data_set = None
+file_name = None
 df_set = None
 selected_column = None
 selected_algorithm = None
+# user_email = None
 
 # Function to check allowed file extensions
 ALLOWED_EXTENSIONS = {'csv'}
@@ -34,19 +42,20 @@ def read_column_names(file):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    global data_set, df_set
+    global data_set, df_set, user_email, file_name
 
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
     file = request.files['file']
+    user_email = request.form.get('email')
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
     if not allowed_file(file.filename):
         return jsonify({'error': 'File extension not allowed. Please upload a .csv file.'}), 400
-
+    file.name = file_name
     data, df = read_file(file)
     data_set = data.copy()
     df_set = df.copy()
@@ -86,13 +95,10 @@ def select_column():
     return jsonify({'message': 'Column selected successfully'}), 200
 
 def train_model_with_algorithm(data, df, algorithm, column):
-    # data['age'] = data['age'].astype('float64')
     df = remove_null_values(df)
     data = handle_null_values(data, df)
-    data = handle_outliers(data,column)
-    # data['income'] = data['income'].str.strip()
-    # data['income'] = data['income'].replace({'<=50K.': '<=50K', '>50K.': '>50K'})
-    data = label_encoding(data,column)
+    data = handle_outliers(data, column)
+    data, mapping = label_encoding(data, column)
     X, Y = split_x_y(data, column)
     X_train, X_test, y_train, y_test = split_data(X, Y)
 
@@ -105,7 +111,26 @@ def train_model_with_algorithm(data, df, algorithm, column):
     model_filename = 'trained_model.pkl'
     joblib.dump(model, model_filename)
 
+    send_email( file_name, mapping)
+
     return model_filename, acc, tr_acc, precision_rf, recall_rf
+
+def send_email( model_filename, class_mappings):
+    yag = yagmail.SMTP('manethgamage654@gmail.com', 'xhwe owef faow gzhp')
+    
+    subject = "Model Training Completed"
+    body = f"""
+    Hello,
+
+    Your model training is complete. The trained model has been saved as {model_filename}.
+
+    Class mappings for encoded columns are as follows:
+    {class_mappings}
+
+    Best regards,
+    Your Team
+    """
+    yag.send(to='denidugamage3@gmail.com', subject=subject, contents=body)
 
 @app.route('/selected-algorithm', methods=['POST'])
 def select_algorithm():
