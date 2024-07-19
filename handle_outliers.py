@@ -40,33 +40,36 @@ def winsorizing(df, name, upper_limit=0.02, lower_limit=0.02):
     limits = [lower_limit, upper_limit]
     df[name] = stats.mstats.winsorize(df[name], limits=limits)
 
-def handle_outliers(df):
+def handle_outliers(df,target_column):
     for column in df.columns:
-        if pd.api.types.is_numeric_dtype(df[column].dtype):
-            print(column)
-            skewness = skew(df[column])
-            kurtosiss = kurtosis(df[column])
-            print(column, "done")
-            if skewness<-1 or skewness>1 or kurtosiss>0.9:
-                winsorizing(df,column)
-            else:
-                plot = create_plot(df[column])
-                image = open(plot)
-                response = return_llm_response(image)
-                if response == 'normal distribution':
-                    outliers = detect_outliers_z_score(df[column])
-                    replace_outliers_with_mean(df,df[column],outliers)
-                elif response == 'Uniform Distribution':
-                    outliers = detect_outliers_iqr(df[column])
-                    replace_outliers_with_midpoint(df,df[column],outliers)
-                elif response == 'Right-skewed' or 'Left-skewed':
-                    outliers = detect_outliers_iqr(df[column])
-                    replace_outliers_with_median(df,df[column],outliers)
-                elif response == 'Bimodal Distribution' or 'Multimodal Distribution':
-                    outliers = detect_outliers_iqr(df[column])
-                    replace_outliers_with_mode(df,df[column],outliers)
-        else:
+        if column == target_column:
             pass
+        else:
+            if pd.api.types.is_numeric_dtype(df[column].dtype):
+                print(column)
+                skewness = skew(df[column])
+                kurtosiss = kurtosis(df[column])
+                print(column, "done")
+                if skewness<-1 or skewness>1 or kurtosiss>0.9:
+                    winsorizing(df,column)
+                else:
+                    plot = create_plot(df[column])
+                    image = open(plot)
+                    response = return_llm_response(image)
+                    if response == 'normal distribution':
+                        outliers = detect_outliers_z_score(df[column])
+                        replace_outliers_with_mean(df,df[column],outliers)
+                    elif response == 'Uniform Distribution':
+                        outliers = detect_outliers_iqr(df[column])
+                        replace_outliers_with_midpoint(df,df[column],outliers)
+                    elif response == 'Right-skewed' or 'Left-skewed':
+                        outliers = detect_outliers_iqr(df[column])
+                        replace_outliers_with_median(df,df[column],outliers)
+                    elif response == 'Bimodal Distribution' or 'Multimodal Distribution':
+                        outliers = detect_outliers_iqr(df[column])
+                        replace_outliers_with_mode(df,df[column],outliers)
+            else:
+                pass
     return df
 
 

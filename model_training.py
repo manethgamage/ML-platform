@@ -21,10 +21,13 @@ from scipy.stats import randint as sp_randInt
 from sklearn.metrics import precision_score, recall_score
 from handle_class_imbalaced import *
 
-def label_encoding(df):
+def label_encoding(df,tar_column):
+    encoder = LabelEncoder()
+    if df[tar_column].dtype != 'object':
+        df[tar_column] = encoder.fit_transform(df[tar_column])
+        
     for column in df.columns:
         if df[column].dtype == 'object':
-            encoder = LabelEncoder()
             df[column] = encoder.fit_transform(df[column])
     return df
 
@@ -40,7 +43,7 @@ def split_data(x,y):
 
 def choose_classifier(X_train,Y_train,x_test,y_test):
     classifiers = {
-    'Logistic Regression': LogisticRegression(max_iter=1000),
+    'Logistic Regression': LogisticRegression(max_iter=10000),
     'Decision Tree': DecisionTreeClassifier(),
     'Random Forest': RandomForestClassifier(),
     'Gradient Boosting': GradientBoostingClassifier(),
@@ -274,195 +277,386 @@ def train_svc(x_train,y_train):
 def train_model(name,x,y,x_train,y_train,x_test,y_test):
     ratio = check_imbalance(y)
     print(ratio)
-    if name == 'Logistic Regression':
-        model,best = train_logistic_regression(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-            
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'Decision Tree':
-        model,best = train_decision_tree_classifier(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-            hell = print("this")
-            
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'Random Forest':
-        model,best = train_randomForest_classifier(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'Gradient Boosting':
-        model ,best = train_GradientBoosting_classifier(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'k-Nearest Neighbors':
-        model , best = train_kNearest_Neighbors(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    if name == 'Naive Bayes1':
-        model, best = train_GaussianNB(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'Naive Bayes2':
-        model, best = train_bernouliNB(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'XGBoost':
-        model, best = train_XGboost_classifier(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = best
-            model.fit(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
-    
-    if name == 'Support Vector Machine':
-        model = train_svc(x_train,y_train)
-        pred = model.predict(x_test)
-        acc = accuracy_score(y_test,pred)
-        pred_train = model.predict(x_train)
-        acc_tr = accuracy_score(y_train,pred_train)
-        precision_rf = precision_score(y_test, pred)
-        recall_rf = recall_score(y_test, pred)
-        if ratio >1.5:
-            X_sampled,y_sampled = apply_oversampling(x,y)
-            X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
-            model = train_svc(X_train,Y_train)
-            pred = model.predict(X_test)
-            acc = accuracy_score(Y_test,pred)
-            pred_train = model.predict(X_train)
-            acc_tr = accuracy_score(Y_train,pred_train)
-            precision_rf = precision_score(Y_test, pred)
-            recall_rf = recall_score(Y_test, pred)
-        return model , acc, acc_tr,precision_rf,recall_rf
+    if len(y.unique()) == 2:
+        if name == 'Logistic Regression':
+            model,best = train_logistic_regression(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+                
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Decision Tree':
+            model,best = train_decision_tree_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+                hell = print("this")
+                
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Random Forest':
+            model,best = train_randomForest_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Gradient Boosting':
+            model ,best = train_GradientBoosting_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'k-Nearest Neighbors':
+            model , best = train_kNearest_Neighbors(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        if name == 'Naive Bayes1':
+            model, best = train_GaussianNB(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Naive Bayes2':
+            model, best = train_bernouliNB(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'XGBoost':
+            model, best = train_XGboost_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Support Vector Machine':
+            model = train_svc(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred)
+            recall_rf = recall_score(y_test, pred)
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = train_svc(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred)
+                recall_rf = recall_score(Y_test, pred)
+            return model , acc, acc_tr,precision_rf,recall_rf
+    else:
+        if name == 'Logistic Regression':
+            model,best = train_logistic_regression(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+                
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Decision Tree':
+            model,best = train_decision_tree_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+                
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Random Forest':
+            model,best = train_randomForest_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Gradient Boosting':
+            model ,best = train_GradientBoosting_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'k-Nearest Neighbors':
+            model , best = train_kNearest_Neighbors(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        if name == 'Naive Bayes1':
+            model, best = train_GaussianNB(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Naive Bayes2':
+            model, best = train_bernouliNB(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'XGBoost':
+            model, best = train_XGboost_classifier(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = best
+                model.fit(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
+        if name == 'Support Vector Machine':
+            model = train_svc(x_train,y_train)
+            pred = model.predict(x_test)
+            acc = accuracy_score(y_test,pred)
+            pred_train = model.predict(x_train)
+            acc_tr = accuracy_score(y_train,pred_train)
+            precision_rf = precision_score(y_test, pred,average='weighted')
+            recall_rf = recall_score(y_test, pred,average='weighted')
+            if ratio >1.5:
+                X_sampled,y_sampled = apply_oversampling(x,y)
+                X_train, X_test, Y_train, Y_test = split_data(X_sampled,y_sampled)
+                model = train_svc(X_train,Y_train)
+                pred = model.predict(X_test)
+                acc = accuracy_score(Y_test,pred)
+                pred_train = model.predict(X_train)
+                acc_tr = accuracy_score(Y_train,pred_train)
+                precision_rf = precision_score(Y_test, pred,average='weighted')
+                recall_rf = recall_score(Y_test, pred,average='weighted')
+            return model , acc, acc_tr,precision_rf,recall_rf
+        
     
     
 

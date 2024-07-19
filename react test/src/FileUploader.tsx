@@ -205,11 +205,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
                   ref={fileInputRef}
                 />
               </div>
-              {selectedFileName && (
-                <div className="file-preview">
-                  <p className="file-uploader-filename">{selectedFileName}</p>
-                </div>
-              )}
+              
             </div>
             <Button variant="primary" type="submit" className="mt-3 file-uploader-button">
               Upload

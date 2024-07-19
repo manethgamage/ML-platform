@@ -37,22 +37,33 @@ def fill_null_with_midpoint(column):
     return column.fillna(midpoint)
 
 def remove_null_values(df):
-    return df.dropna()
+    df = df.dropna()
+    return df
 
 def handle_null_values(df,df1):
-    for column in df.columns:
-        if df[column].dtype == 'object':
-            df[column] = fill_null_with_mode(df[column])
-        elif pd.api.types.is_numeric_dtype(df[column].dtype):
-            plot = create_plot(df1[column])
-            image = open(plot)
-            response = return_llm_response(image)
-            if response == 'normal distribution':
-                df[column] = fill_null_with_mean(df[column])
-            elif response == 'Uniform Distribution':
-                df[column] = fill_null_with_midpoint(df[column])
-            elif response == 'Right-skewed' or 'Left-skewed':
-                df[column] = fill_null_with_median(df[column])
-            elif response == 'Bimodal Distribution' or 'Multimodal Distribution':
-                df[column] = fill_null_with_mode(df[column])
+    null_values = df.isnull().sum()
+    if null_values.sum() == 0:
+        print('no null')
+        pass
+    else:
+        missing_percentage = df.isnull().sum() / len(df) * 100
+        total_missing_percentage = missing_percentage.sum()
+        if total_missing_percentage<5:
+            df = df.dropna()
+        else:        
+            for column in df.columns:
+                if df[column].dtype == 'object':
+                    df[column] = fill_null_with_mode(df[column])
+                elif pd.api.types.is_numeric_dtype(df[column].dtype):
+                    plot = create_plot(df1[column])
+                    image = open(plot)
+                    response = return_llm_response(image)
+                    if response == 'normal distribution':
+                        df[column] = fill_null_with_mean(df[column])
+                    elif response == 'Uniform Distribution':
+                        df[column] = fill_null_with_midpoint(df[column])
+                    elif response == 'Right-skewed' or 'Left-skewed':
+                        df[column] = fill_null_with_median(df[column])
+                    elif response == 'Bimodal Distribution' or 'Multimodal Distribution':
+                        df[column] = fill_null_with_mode(df[column])
     return df
