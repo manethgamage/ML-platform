@@ -28,6 +28,7 @@ def apply_oversampling(x, y, method='auto', imbalance_threshold=1.5, minority_th
             if method == 'random':
                 oversampler = RandomOverSampler(random_state=42)
             elif method == 'smote':
+                print('aplying smote')
                 oversampler = SMOTE(random_state=42)
 
             X_resampled, y_resampled = oversampler.fit_resample(x, y)

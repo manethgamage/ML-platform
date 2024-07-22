@@ -274,7 +274,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
             <div className="algorithm-list mt-3">
               <h5>Select an Algorithm:</h5>
               <Form>
-                {['Logistic Regression', 'Decision Tree', 'Random Forest', 'Gradient Boosting', 'Support Vector Machine', 'k-Nearest Neighbors', 'Naive Bayes1', 'Naive Bayes2', 'Naive Bayes3', 'XGBoost', 'Train With Best Algorithm'].map((alg, index) => (
+                {['Logistic Regression', 'Decision Tree', 'Random Forest', 'Gradient Boosting', 'Support Vector Machine', 'k-Nearest Neighbors', 'Naive Bayes1', 'Naive Bayes2', 'Naive Bayes3', 'XGBoost', 'Neural Network', 'Train With Best Algorithm'].map((alg, index) => (
                   <Form.Check 
                     key={index} 
                     type="radio" 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FileUploader from './FileUploader'; // Adjust the path as per your file structure
 import { Container } from 'react-bootstrap';
-import './App.css'
+import './App.css';
 
 const App: React.FC = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -14,9 +14,8 @@ const App: React.FC = () => {
 
   return (
     <Container className="App">
-      <h1>File Uploader Example</h1>
+      <h1 className="text-center">Model Trainer</h1>
       <FileUploader onFileChange={handleFileChange} />
-      
     </Container>
   );
 };

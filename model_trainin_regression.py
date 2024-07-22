@@ -7,6 +7,22 @@ from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import uniform
 import xgboost as xgb
 from scipy.stats import randint
+from sklearn.preprocessing import LabelEncoder
+
+
+
+def label_encoding_regression(df):
+    class_mappings = {}
+    encoder = LabelEncoder()
+    for column in df.columns:
+        if df[column].dtype == 'object' :
+            encoder = LabelEncoder()  # Initialize a new encoder for each column
+            df[column] = encoder.fit_transform(df[column])
+            class_mappings[column] = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)))
+    return df, class_mappings
+            
+    
+    
 
 def choose_regressor(X_train, y_train, X_test, y_test):
     regressors = {

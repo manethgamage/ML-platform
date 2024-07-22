@@ -6,8 +6,10 @@ from handle_null_values import *
 from handle_class_imbalaced import *
 from handle_outliers import *
 from model_training_classification import *
+from train_FNN import *
 import joblib
-import smtplib
+import pickle
+import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import yagmail
@@ -95,9 +97,12 @@ def select_column():
     return jsonify({'message': 'Column selected successfully'}), 200
 
 def train_model_with_algorithm(data, df, algorithm, column):
+    data['age'] = data['age'].astype('float64')
     df = remove_null_values(df)
     data = handle_null_values(data, df)
     data = handle_outliers(data, column)
+    data['income'] = data['income'].str.strip()
+    data['income'] = data['income'].replace({'<=50K.': '<=50K', '>50K.': '>50K'})
     data, mapping = label_encoding(data, column)
     X, Y = split_x_y(data, column)
     X_train, X_test, y_train, y_test = split_data(X, Y)
@@ -105,24 +110,32 @@ def train_model_with_algorithm(data, df, algorithm, column):
     if algorithm == 'Train With Best Algorithm':
         name = choose_classifier(X_train, y_train, X_test, y_test)
         model, acc, tr_acc, precision_rf, recall_rf = train_model(name, X, Y, X_train, y_train, X_test, y_test)
+    elif algorithm == 'Neural Network':
+        model,scaler, acc, tr_acc, precision_rf, recall_rf = fnn(len(Y.unique()),X,Y)
+        
+        
     else:
         model, acc, tr_acc, precision_rf, recall_rf = train_model(algorithm, X, Y, X_train, y_train, X_test, y_test)
 
-    model_filename = 'trained_model.pkl'
-    joblib.dump(model, model_filename)
-
-    send_email( file_name, mapping)
+    if algorithm == 'Neural Network':
+        model_filename = 'trained_model.h5'
+        model.save(model_filename)
+        send_email_fnn(model_filename,scaler,mapping,algorithm)
+    else:   
+        model_filename = 'trained_model.pkl'
+        joblib.dump(model, model_filename)
+        send_email( model_filename, mapping,algorithm)
 
     return model_filename, acc, tr_acc, precision_rf, recall_rf
 
-def send_email( model_filename, class_mappings):
+def send_email( model_filename, class_mappings,algorithm):
     yag = yagmail.SMTP('manethgamage654@gmail.com', 'xhwe owef faow gzhp')
     
     subject = "Model Training Completed"
     body = f"""
     Hello,
 
-    Your model training is complete. The trained model has been saved as {model_filename}.
+    Your model training is complete with {algorithm} algorithm. The trained model has been saved as {model_filename}.
 
     Class mappings for encoded columns are as follows:
     {class_mappings}
@@ -131,6 +144,34 @@ def send_email( model_filename, class_mappings):
     Your Team
     """
     yag.send(to='denidugamage3@gmail.com', subject=subject, contents=body)
+
+def send_email_fnn(model_filename, scaler, class_mappings, algorithm):
+    yag = yagmail.SMTP('manethgamage654@gmail.com', 'xhwe owef faow gzhp')
+    
+    subject = "Model Training Completed"
+    body = f"""
+    Hello,
+
+    Your model training is complete with the {algorithm} algorithm. The trained model has been saved as {model_filename}.
+
+    Class mappings for encoded columns are as follows:
+    {class_mappings}
+
+    Best regards,
+    Your Team
+    """
+    
+    # Serialize the scaler and class mappings
+    scaler_bytes = pickle.dumps(scaler)
+    
+    # Attach the serialized scaler and class mappings
+    attachments = [
+        (f"{model_filename}", 'application/octet-stream', model_filename),
+        ('scaler.pkl', 'application/octet-stream', scaler_bytes)
+    ]
+    
+    yag.send(to='denidugamage3@gmail.com', subject=subject, contents=body, attachments=attachments)
+
 
 @app.route('/selected-algorithm', methods=['POST'])
 def select_algorithm():
@@ -163,4 +204,4 @@ def download_model():
         return jsonify({'error': 'Model file not found'}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, use_reloader=False)
