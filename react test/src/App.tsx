@@ -14,7 +14,7 @@ const App: React.FC = () => {
     <>
       {showFileUploader ? (
         <div className="app-container">
-          <h1 className="text-center">Model Trainer</h1>
+          <h1 className="text-center">ModelForge</h1>
           <FileUploader onFileChange={(file) => console.log(file)} />
         </div>
       ) : (
