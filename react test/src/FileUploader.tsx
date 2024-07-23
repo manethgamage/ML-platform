@@ -156,11 +156,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
 
       if (response.ok) {
         const result = await response.json();
-        const downloadUrl = `http://localhost:5000/download-model?model_filename=${result.model_filename}`;
+        const downloadUrl = `http://localhost:5000/download-model`;
 
         setTableData(prevData => prevData.map(row =>
           row.fileName === selectedFileName
-            ? { ...row, status: 'Completed', testAccuracy: result.testAccuracy, trainingAccuracy: result.trainingAccuracy, precision: result.precision, recall: result.recall, model: downloadUrl }
+            ? { ...row, status: 'Completed', testAccuracy: result.testAccuracy, trainingAccuracy: result.trainingAccuracy, precision: result.precision, recall: result.recall, model: downloadUrl, modelContent: result.model_content }
             : row
         ));
         resetForm(); // Reset the form after training and model download
@@ -174,6 +174,60 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
     }
   };
 
+  const handleDownloadClick = async (modelContent: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/download-model', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ model_content: modelContent }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+  
+      // Extract filename from Content-Disposition if available
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = 'trained_model'; // Default filename
+      if (contentDisposition) {
+        const matches = /filename="([^"]*)"/.exec(contentDisposition);
+        if (matches) {
+          fileName = matches[1];
+        }
+      }
+  
+      // Determine file extension based on Content-Type
+      const contentType = response.headers.get('Content-Type');
+      if (contentType) {
+        if (contentType.includes('application/octet-stream')) {
+          fileName += '.pkl';
+        } else if (contentType.includes('application/x-hdf5')) {
+          fileName += '.h5';
+        } else if (contentType.includes('application/json')) {
+          fileName += '.json';
+        } else {
+          // Default extension or derive from Content-Type if needed
+          fileName += `.${contentType.split('/')[1]}`;
+        }
+      }
+  
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading model:', error);
+    }
+  };
+  
   const resetForm = () => {
     setSelectedFile(null);
     setSelectedFileName(null);
@@ -323,7 +377,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileChange }) => {
                   <td>{data.recall}</td>
                   <td>
                     {data.model ? (
-                      <a href={data.model} download>Download</a>
+                      <a href="#" onClick={() => handleDownloadClick(data.modelContent)}>Download</a>
                     ) : (
                       'N/A'
                     )}

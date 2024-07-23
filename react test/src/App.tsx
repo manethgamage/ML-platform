@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import FileUploader from './FileUploader'; // Adjust the path as per your file structure
-import { Container } from 'react-bootstrap';
+import FrontPage from './FrontPage'; // Ensure this path is correct
 import './App.css';
 
 const App: React.FC = () => {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [showFileUploader, setShowFileUploader] = useState(false);
 
-  // Handle file change callback
-  const handleFileChange = (file: File) => {
-    setUploadedFile(file);
-    // You can perform additional actions here with the uploaded file
+  const handleStartClick = () => {
+    setShowFileUploader(true);
   };
 
   return (
-    <Container className="App">
-      <h1 className="text-center">Model Trainer</h1>
-      <FileUploader onFileChange={handleFileChange} />
-    </Container>
+    <>
+      {showFileUploader ? (
+        <div className="app-container">
+          <h1 className="text-center">Model Trainer</h1>
+          <FileUploader onFileChange={(file) => console.log(file)} />
+        </div>
+      ) : (
+        <FrontPage onStartClick={handleStartClick} />
+      )}
+    </>
   );
 };
 

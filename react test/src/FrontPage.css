@@ -1,0 +1,87 @@
+.front-page {
+    position: relative;
+    height: 100vh;
+    width: 200; /* Ensure full viewport width */
+    background-image: url('src/istockphoto-1368210864-612x612.jpg'); /* Correct path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex; /* Make sure it's flex to center content */
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .content {
+    text-align: center;
+    color: #e0e0e0; /* Light grey for better contrast */
+    max-width: 800px;
+    margin: 0 auto;
+    height: 450px;
+  }
+  
+  h1 {
+    font-size: 4em;
+    margin-bottom: 0.5em;
+    color: #ffffff; /* White color for the main heading */
+  }
+  
+  .main-tagline {
+    font-size: 51px; /* Larger font size for main tagline */
+    margin-bottom: 0.5em;
+  }
+  
+  .sub-tagline {
+    font-size: 20px; /* Smaller font size for sub tagline */
+    margin-bottom: 1em;
+  }
+  
+  
+  .email-signup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .email-input {
+    padding: 0.5em 1em;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+  }
+  
+  .start-button {
+    padding: 0.5em 1.5em;
+    font-size: 1em;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+  }
+  
+  .start-button:hover {
+    background-color: #0056b3;
+  }
+
+  .error-message {
+    color: #e74c3c; /* Red color for the error message */
+    font-size: 0.9rem;
+    margin-top: 0.25rem; /* Space between the input and error message */
+    width: 100%; /* Aligns with input width */
+  }
+  
