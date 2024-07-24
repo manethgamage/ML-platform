@@ -26,4 +26,113 @@
   .columns-list h5 {
     margin-bottom: 10px;
   }
+
+  .file-uploader-container {
+    display: flex;
+    flex-direction: column;
+    height: 600px; /* Full viewport height */
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+  .file-uploader-content {
+    flex: 0.7; /* Take up available space */
+  }
+
+  .file-uploader-container {
+    margin-top: 20px;
+  }
+  
+  .file-uploader-label {
+    margin-right: 10px;
+  }
+  
+  .file-uploader-input {
+    display: inline-block;
+    width: auto;
+  }
+  
+  .file-preview {
+    margin-left: 10px;
+  }
+  
+  .file-uploader-button {
+    margin-top: 20px;
+  }
+  
+  .columns-list {
+    margin-top: 20px;
+  }
+  
+  .columns-list h5 {
+    margin-bottom: 10px;
+  }
+  
+  .file-uploader-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .file-uploader-label {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .file-uploader-input {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 3px;
+  }
+  
+  .file-uploader-button {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+  }
+  
+  .columns-list {
+    margin-top: 20px;
+  }
+  
+  .columns-list h5 {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .algorithm-list {
+    margin-top: 20px;
+  }
+  
+  .algorithm-list h5 {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .table-container {
+    margin-top: 20px;
+  }
+  
+  .table {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    table-layout: fixed; /* Ensures columns are properly sized */
+  }
+  
+  .table th, .table td {
+    overflow: hidden; /* Prevents overflow within cells */
+    text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+    white-space: nowrap; /* Prevents text wrapping */
+  }
+  
+  .table th {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .table td {
+    padding: 10px;
+  }
   
